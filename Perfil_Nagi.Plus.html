@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Selección de Perfiles Nagi Plus</title> <style>
+/* Estilos generales */
+body {
+  background-color: #141414;
+  font-family: 'Arial', sans-serif;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  margin: 0;
+  overflow: hidden; /* Oculta la barra de desplazamiento para un efecto más limpio */
+}
+
+.title {
+  font-size: 2.2em;
+  font-weight: bold;
+  margin-bottom: 30px;
+  text-shadow: 1px 1px 2px #000;
+  color: #e50914; /* Color rojo Netflix */
+  animation: titleAnimation 1s ease-in-out; /* Animación para el título */
+}
+
+.profiles {
+  display: flex;
+  flex-wrap: wrap; /* Permite que los perfiles se ajusten a la pantalla */
+  justify-content: center;
+}
+
+.profile {
+  width: 120px; /* Ancho de la imagen más pequeño */
+  height: 180px; /* Alto de la imagen más pequeño */
+  margin: 15px;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+  position: relative;
+  background-color: #222; /* Fondo oscuro para el perfil */
+  display: flex;
+  flex-direction: column; /* Organiza los elementos verticalmente */
+  align-items: center; /* Centra el contenido horizontalmente */
+  transition: transform 0.2s ease; /* Transición suave para el hover */
+}
+
+.profile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px; /* Curvas para la imagen */
+}
+
+.profile-name {
+  font-size: 1em;
+  font-weight: bold;
+  color: white;
+  text-shadow: 1px 1px 2px #000;
+  margin-top: 10px; /* Espacio entre la imagen y el nombre */
+  animation: nameAnimation 0.5s ease-in-out; /* Animación para el nombre */
+}
+
+.add-profile {
+  width: 120px; /* Ancho de la imagen más pequeño */
+  height: 180px; /* Alto de la imagen más pequeño */
+  margin: 15px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+  background-color: #555;
+  color: white;
+  font-size: 2em;
+  border: none; /* Elimina el borde del botón */
+  transition: transform 0.2s ease; /* Transición suave para el hover */
+}
+
+.button {
+  background-color: #e50914;
+  color: white;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 20px;
+  font-size: 1.2em;
+  font-weight: bold;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Transiciones suaves para el hover */
+  animation: buttonAnimation 1s ease-in-out; /* Animación para el botón */
+}
+
+.button:hover {
+  background-color: #c00; /* Rojo más oscuro al pasar el mouse */
+  transform: scale(1.05); /* Aumento de tamaño al pasar el mouse */
+}
+
+/* Estilos para la ventana modal */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+  background-color: #141414;
+  margin: 10% auto;
+  padding: 20px;
+  border: none;
+  width: 350px;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+  animation: modalAnimation 0.5s ease-in-out; /* Animación para el modal */
+}
+
+.modal-content h2 {
+  margin-bottom: 15px;
+  text-align: center;
+  color: #e50914; /* Color rojo Netflix */
+}
+
+.modal-content label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.modal-content input[type="text"],
+.modal-content select {
+  width: calc(100% - 12px);
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #555;
+  border-radius: 4px;
+  background-color: #222;
+  color: white;
+}
+
+.modal-content .profile-image {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.modal-content .profile-image img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 2px solid #555;
+}
+
+.modal-buttons {
+  text-align: center;
+  margin-top: 15px;
+}
+
+.modal-buttons button {
+  background-color: #e50914;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 0 5px;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Transiciones suaves para el hover */
+}
+
+.modal-buttons button:hover {
+  background-color: #c00; /* Rojo más oscuro al pasar el mouse */
+  transform: scale(1.05); /* Aumento de tamaño al pasar el mouse */
+}
+
+/* Ícono de borrar */
+.delete-icon {
+  cursor: pointer;
+  font-size: 1.5em;
+  color: white; /* Color blanco para el ícono */
+  transition: color 0.3s ease;
+  margin-top: 10px; /* Espacio entre el nombre y el ícono */
+  animation: iconAnimation 1s ease-in-out; /* Animación para el ícono */
+}
+
+.delete-icon:hover {
+  color: #e50914; /* Rojo Netflix al pasar el mouse */
+}
+
+/* Estilos para el tutorial */
+#tutorial {
+  margin-top: 20px;
+  background-color: #222;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  width: 500px;
+  text-align: left;
+}
+
+#tutorial h3 {
+  margin-top: 0;
+  color: #e50914;
+}
+
+#tutorial p {
+  line-height: 1.6;
+}
+
+#tutorial ul {
+  padding-left: 20px;
+}
+
+/* Estilos para la selección de imágenes */
+.image-options {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+.image-option {
+  margin: 0 10px;
+  cursor: pointer;
+  transition: transform 0.2s ease; /* Transición suave para el hover */
+}
+
+.image-option img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 2px solid #555;
+}
+
+.image-option:hover {
+  transform: scale(1.1); /* Aumento de tamaño al pasar el mouse */
+}
+
+/* Estilos para la alerta */
+.alert {
+  background-color: #222; /* Fondo oscuro */
+  border: 1px solid #555; /* Borde tenue */
+  border-radius: 8px; /* Esquinas redondeadas */
+  padding: 15px;
+  color: white; /* Texto blanco */
+  text-align: center; /* Centra el texto */
+  font-weight: bold; /* Texto en negrita */
+  margin-bottom: 10px; /* Espacio entre la alerta y otros elementos */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Sombra suave */
+  animation: alertAnimation 0.5s ease-in-out; /* Animación para la alerta */
+}
+
+@keyframes alertAnimation {
+  0% { transform: translateY(-10px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+/* Animaciones */
+@keyframes titleAnimation {
+  0% { transform: translateY(-10px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes nameAnimation {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes buttonAnimation {
+  0% { transform: scale(0.9); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes modalAnimation {
+  0% { transform: translateY(-20px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes iconAnimation {
+  0% { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+</style>
+</head>
+<body>
+
+<div class="title">¿Quién eres? Elige tu perfil Nagi Plus</div>
+
+<div class="profiles" id="profileContainer">
+  <!-- Perfiles serán agregados aquí -->
+</div>
+
+<button class="button" id="addProfileButton">Agregar perfil</button>
+
+<!-- Ventana modal -->
+<div id="myModal" class="modal">
+  <div class="modal-content">
+    <span id="closeModal" class="close">&times;</span>
+    <h2>Editar perfil</h2>
+    <div class="profile-image">
+      <img id="profileImage" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgJkYSf8gHlHdtZMOM-1mtmDoC8PKK78Zz2uAaP11c1CKFgBnGlxpnFajk&s=10" alt="Avatar">
+    </div>
+    <div class="image-options">
+      <div class="image-option" data-image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgJkYSf8gHlHdtZMOM-1mtmDoC8PKK78Zz2uAaP11c1CKFgBnGlxpnFajk&s=10">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgJkYSf8gHlHdtZMOM-1mtmDoC8PKK78Zz2uAaP11c1CKFgBnGlxpnFajk&s=10" alt="Imagen 1">
+      </div>
+      <div class="image-option" data-image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSunG69zdtsUgvknkBkO-fgr0ekzLeNnbRC3w&usqp=CAU">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSunG69zdtsUgvknkBkO-fgr0ekzLeNnbRC3w&usqp=CAU" alt="Imagen 2">
+      </div>
+      <div class="image-option" data-image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7D47Mvupb04YzwliHgs9yTLnS8sYErldZ4Q&usqp=CAU">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7D47Mvupb04YzwliHgs9yTLnS8sYErldZ4Q&usqp=CAU" alt="Imagen 3">
+      </div>
+    </div>
+    <label for="profileName">Nombre:</label>
+    <input type="text" id="profileName" value="">
+    <label for="profileLanguage">Idioma:</label>
+    <select id="profileLanguage">
+      <option value="es">Español</option>
+      <option value="en">Inglés</option>
+    </select>
+    <label for="profileRating">Series y películas permitidas:</label>
+    <select id="profileRating">
+      <option value="all">Todas las clasificaciones</option>
+      <option value="kids">Infantil</option>
+    </select>
+    <label><input type="checkbox" id="profileKids">¿Infantil?</label>
+    <div class="modal-buttons">
+      <button id="saveProfile">Guardar</button>
+      <button id="cancelProfile">Cancelar</button>
+      <button id="deleteProfile">Eliminar perfil</button>
+    </div>
+  </div>
+</div>
+
+<div id="tutorial">
+  <h3>Tutorial</h3>
+  <p>Bienvenido al sistema de selección de perfiles. Aquí puedes crear, editar y eliminar perfiles para acceder a Nagi Plus.</p>
+
+  <h4>Crear un perfil:</h4>
+  <ul>
+    <li>Haz clic en el botón "Agregar perfil".</li>
+    <li>Se abrirá una ventana modal con la información del perfil.</li>
+    <li>Ingresa el nombre, idioma, clasificación de contenido y si es un perfil para niños.</li>
+    <li>Elige una imagen de perfil de las opciones disponibles.</li>
+    <li>Haz clic en "Guardar" para crear el perfil.</li>
+  </ul>
+
+  <h4>Editar un perfil:</h4>
+  <ul>
+    <li>Toca (o haz clic) en el perfil que deseas editar.</li>
+    <li>Se abrirá una ventana modal con la información del perfil.</li>
+    <li>Puedes cambiar el nombre, el idioma, la clasificación de contenido y si es un perfil para niños.</li>
+    <li>Elige una imagen de perfil de las opciones disponibles.</li>
+    <li>Haz clic en "Guardar" para aplicar los cambios.</li>
+    <li>Haz clic en "Cancelar" para cerrar la ventana modal sin guardar los cambios.</li>
+  </ul>
+
+  <h4>Eliminar un perfil:</h4>
+  <ul>
+    <li>Haz clic en el ícono de basura (🗑️) que está debajo del nombre del perfil.</li>
+    <li>El perfil se eliminará de la lista.</li>
+  </ul>
+</div>
+
+<script>
+const profileContainer = document.getElementById('profileContainer');
+const addProfileButton = document.getElementById('addProfileButton');
+const modal = document.getElementById('myModal');
+const closeModalBtn = document.getElementById('closeModal');
+const saveProfileBtn = document.getElementById('saveProfile');
+const cancelProfileBtn = document.getElementById('cancelProfile');
+const deleteProfileBtn = document.getElementById('deleteProfile'); // Agrega el ID al botón
+const profileImage = document.getElementById('profileImage');
+const profileNameInput = document.getElementById('profileName');
+const profileLanguageSelect = document.getElementById('profileLanguage');
+const profileRatingSelect = document.getElementById('profileRating');
+const profileKidsCheckbox = document.getElementById('profileKids');
+const imageOptions = document.querySelectorAll('.image-option');
+let profileCount = 0;
+let targetProfile = null;
+let timeoutId = null;
+let shouldRedirect = true;
+
+// Función para crear un nuevo perfil
+function createProfile(imageSrc, name, language, rating, isKids) {
+  const profileDiv = document.createElement('div');
+  profileDiv.classList.add('profile');
+  profileDiv.setAttribute('data-image', imageSrc);
+  profileDiv.setAttribute('data-name', name);
+  profileDiv.setAttribute('data-language', language);
+  profileDiv.setAttribute('data-rating', rating);
+  profileDiv.setAttribute('data-kids', isKids);
+  profileDiv.innerHTML = `
+    <img src="${imageSrc}" alt="">
+    <div class="profile-name">${name}</div>
+  `;
+  profileContainer.appendChild(profileDiv);
+
+  const deleteIcon = document.createElement('span'); 
+  deleteIcon.classList.add('delete-icon');
+  deleteIcon.textContent = '🗑️';
+  deleteIcon.onclick = () => deleteProfile(profileDiv); 
+  profileContainer.appendChild(deleteIcon); // Agrega el ícono dentro del perfil
+
+  profileCount++;
+
+  // Agrega evento touchstart para el nuevo perfil
+  profileDiv.addEventListener('touchstart', (event) => {
+    targetProfile = profileDiv;
+    shouldRedirect = true;
+    timeoutId = setTimeout(() => {
+      modal.style.display = 'block';
+      profileNameInput.value = targetProfile.getAttribute('data-name');
+      profileImage.src = targetProfile.getAttribute('data-image');
+      profileLanguageSelect.value = targetProfile.getAttribute('data-language');
+      profileRatingSelect.value = targetProfile.getAttribute('data-rating');
+      profileKidsCheckbox.checked = targetProfile.getAttribute('data-kids') === 'true';
+      shouldRedirect = false;
+      timeoutId = null;
+    }, 2000);
+  });
+
+  // Agrega evento touchend para el nuevo perfil
+  profileDiv.addEventListener('touchend', (event) => {
+    clearTimeout(timeoutId);
+    timeoutId = null;
+    if (shouldRedirect) {
+      window.location.href = 'otra_pagina.html';
+    }
+  });
+
+  // Agrega evento touchmove para el nuevo perfil
+  profileDiv.addEventListener('touchmove', () => {
+    clearTimeout(timeoutId);
+    timeoutId = null;
+  });
+}
+
+// Lógica para agregar un nuevo perfil
+addProfileButton.addEventListener('click', () => {
+  // Abre la ventana modal directamente
+  modal.style.display = 'block';
+});
+
+// Cerrar ventana modal
+closeModalBtn.addEventListener('click', () => {
+  modal.style.display = 'none';
+});
+
+// Guardar cambios en el perfil
+saveProfileBtn.addEventListener('click', () => {
+  const newName = profileNameInput.value;
+  const newImage = profileImage.src; // Obtén la imagen del modal
+  const newLanguage = profileLanguageSelect.value;
+  const newRating = profileRatingSelect.value;
+  const newIsKids = profileKidsCheckbox.checked;
+
+  // Si hay un perfil seleccionado, edítalo
+  if (targetProfile) {
+    targetProfile.setAttribute('data-name', newName);
+    targetProfile.querySelector('.profile-name').textContent = newName;
+    targetProfile.querySelector('img').src = newImage; // Actualiza la imagen
+    targetProfile.setAttribute('data-language', newLanguage);
+    targetProfile.setAttribute('data-rating', newRating);
+    targetProfile.setAttribute('data-kids', newIsKids);
+  } else {
+    // Si no hay perfil seleccionado, crea uno nuevo
+    if (profileCount < 6) {
+      createProfile(newImage, newName, newLanguage, newRating, newIsKids);
+    } else {
+      // Crea la alerta usando createElement
+      const alertDiv = document.createElement('div');
+      alertDiv.classList.add('alert');
+      alertDiv.textContent = "Ya has alcanzado el límite de 6 perfiles.";
+      document.body.appendChild(alertDiv); // Agrega la alerta al body
+
+      // Elimina la alerta después de 3 segundos
+      setTimeout(() => {
+        document.body.removeChild(alertDiv);
+      }, 3000);
+    }
+  }
+
+  modal.style.display = 'none';
+  profileCount++; // Incrementa el contador de perfiles
+});
+
+// Cancelar edición de perfil
+cancelProfileBtn.addEventListener('click', () => {
+  modal.style.display = 'none';
+});
+
+// Eliminar perfil
+deleteProfileBtn.addEventListener('click', () => { // Agrega el evento al botón
+  if (targetProfile) {
+    deleteProfile(targetProfile); 
+    modal.style.display = 'none'; // Cierra el modal
+  }
+});
+
+// Eliminar perfil (función existente)
+function deleteProfile(profileDiv) {
+  profileContainer.removeChild(profileDiv); 
+  const deleteIcon = profileContainer.lastChild; 
+  if (deleteIcon && deleteIcon.classList.contains('delete-icon')) {
+    profileContainer.removeChild(deleteIcon); 
+  }
+  profileCount--; 
+}
+
+// Seleccionar imagen de perfil
+imageOptions.forEach(option => {
+  option.addEventListener('click', () => {
+    const newImageSrc = option.getAttribute('data-image');
+    profileImage.src = newImageSrc;
+  });
+});
+
+// Cargar perfiles desde localStorage al cargar la página
+window.addEventListener('load', () => {
+  const storedProfiles = localStorage.getItem('profiles');
+  if (storedProfiles) {
+    const profiles = JSON.parse(storedProfiles);
+    profiles.forEach(profile => {
+      createProfile(profile.image, profile.name, profile.language, profile.rating, profile.kids);
+    });
+    profileCount = profiles.length;
+  }
+});
+
+// Guardar perfiles en localStorage al cerrar la ventana modal
+modal.addEventListener('hidden.bs.modal', () => {
+  const profiles = [];
+  const profileElements = document.querySelectorAll('.profile');
+  profileElements.forEach(profile => {
+    profiles.push({
+      image: profile.getAttribute('data-image'),
+      name: profile.getAttribute('data-name'),
+      language: profile.getAttribute('data-language'),
+      rating: profile.getAttribute('data-rating'),
+      kids: profile.getAttribute('data-kids') === 'true'
+    });
+  });
+  localStorage.setItem('profiles', JSON.stringify(profiles));
+});
+</script>
+
+</body>
+</html>
