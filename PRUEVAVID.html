@@ -105,25 +105,36 @@
             color: white;
             display: none;
         }
+
+        #title {
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            color: white;
+            font-size: 24px;
+            z-index: 10;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        }
     </style>
 </head>
 <body>
     <div id="videoContainer">
         <video id="video"></video>
+        <div id="title"></div>
         <div id="centerControls">
             <button id="playPause"><i class="fas fa-play"></i></button>
         </div>
         <div id="controls">
-            <button id="rewind"><i class="fas fa-undo"></i></button>
-            <button id="forward"><i class="fas fa-redo"></i></button>
+            <button data-action="rewind"><i class="fas fa-undo"></i></button>
+            <button data-action="forward"><i class="fas fa-redo"></i></button>
             <div class="progress-container">
                 <div id="loadingBar"></div>
             </div>
             <div id="timeDisplay">
                 <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
             </div>
-            <button id="mute"><i class="fas fa-volume-up"></i></button>
-            <button id="fullscreen"><i class="fas fa-expand"></i></button>
+            <button data-action="mute"><i class="fas fa-volume-up"></i></button>
+            <button data-action="fullscreen"><i class="fas fa-expand"></i></button>
         </div>
         <div id="spinner"><i class="fas fa-spinner fa-spin"></i></div>
     </div>
@@ -131,21 +142,19 @@
     <script>
         const video = document.getElementById('video');
         const playPauseButton = document.getElementById('playPause');
-        const muteButton = document.getElementById('mute');
-        const fullscreenButton = document.getElementById('fullscreen');
-        const rewindButton = document.getElementById('rewind');
-        const forwardButton = document.getElementById('forward');
-        const currentTimeDisplay = document.getElementById('currentTime');
-        const durationDisplay = document.getElementById('duration');
         const loadingBar = document.getElementById('loadingBar');
         const progressContainer = document.querySelector('.progress-container');
         const controls = document.getElementById('controls');
         const centerControls = document.getElementById('centerControls');
         const spinner = document.getElementById('spinner');
+        const currentTimeDisplay = document.getElementById('currentTime');
+        const durationDisplay = document.getElementById('duration');
+        const titleDisplay = document.getElementById('title');
         let controlsVisible = false;
         let hideControlsTimeout;
 
-        const videoLink = "tu-video.mp4"; // Cambia esto por la URL de tu video
+        const videoLink = new URLSearchParams(window.location.search).get('link');
+        const videoTitle = new URLSearchParams(window.location.search).get('title');
 
         function setupVideo(url) {
             if (url.endsWith('.m3u8')) {
@@ -168,7 +177,13 @@
             }
         }
 
-        setupVideo(videoLink);
+        if (videoLink) {
+            setupVideo(videoLink);
+        }
+
+        if (videoTitle) {
+            titleDisplay.textContent = videoTitle;
+        }
 
         video.addEventListener('loadeddata', () => {
             durationDisplay.textContent = formatTime(video.duration);
@@ -193,35 +208,13 @@
             centerControls.style.opacity = '1';
         });
 
-        playPauseButton.addEventListener('click', () => {
-            if (video.paused) {
-                video.play();
-                playPauseButton.innerHTML = '<i class="fas fa-pause"></i>';
-            } else {
-                video.pause();
-                playPauseButton.innerHTML = '<i class="fas fa-play"></i>';
+        playPauseButton.addEventListener('click', togglePlayPause);
+
+        controls.addEventListener('click', (event) => {
+            const action = event.target.closest('button')?.dataset.action;
+            if (action) {
+                handleControlAction(action);
             }
-        });
-
-        muteButton.addEventListener('click', () => {
-            video.muted = !video.muted;
-            muteButton.innerHTML = video.muted ? '<i class="fas fa-volume-mute"></i>' : '<i class="fas fa-volume-up"></i>';
-        });
-
-        fullscreenButton.addEventListener('click', () => {
-            if (document.fullscreenElement) {
-                document.exitFullscreen();
-            } else {
-                videoContainer.requestFullscreen();
-            }
-        });
-
-        rewindButton.addEventListener('click', () => {
-            video.currentTime = Math.max(0, video.currentTime - 10);
-        });
-
-        forwardButton.addEventListener('click', () => {
-            video.currentTime = Math.min(video.duration, video.currentTime + 10);
         });
 
         progressContainer.addEventListener('click', (event) => {
@@ -242,6 +235,38 @@
             }
         });
 
+        function togglePlayPause() {
+            if (video.paused) {
+                video.play();
+                playPauseButton.innerHTML = '<i class="fas fa-pause"></i>';
+            } else {
+                video.pause();
+                playPauseButton.innerHTML = '<i class="fas fa-play"></i>';
+            }
+        }
+
+        function handleControlAction(action) {
+            switch (action) {
+                case 'rewind':
+                    video.currentTime = Math.max(0, video.currentTime - 10);
+                    break;
+                case 'forward':
+                    video.currentTime = Math.min(video.duration, video.currentTime + 10);
+                    break;
+                case 'mute':
+                    video.muted = !video.muted;
+                    document.querySelector('[data-action="mute"] i').className = video.muted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
+                    break;
+                case 'fullscreen':
+                    if (document.fullscreenElement) {
+                        document.exitFullscreen();
+                    } else {
+                        videoContainer.requestFullscreen();
+                    }
+                    break;
+            }
+        }
+
         function showControls() {
             controls.style.opacity = '1';
             centerControls.style.opacity = '1';
@@ -261,5 +286,4 @@
         }
     </script>
 </body>
-  </html>
-  
+</html>
